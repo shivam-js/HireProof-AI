@@ -1,5 +1,6 @@
 import fs from "fs";
 import pdf from "pdf-parse/lib/pdf-parse.js";
+import generateInterviewQuestions from "../ai/interviewQuestionEngine.js";
 
 const COMMON_SKILLS = [
   "React",
@@ -89,6 +90,19 @@ const extractProjects = (text) => {
     "clone",
   ];
 
+  const blockedProjectHeadings = [
+    "project",
+    "projects",
+    "project details",
+    "technical skills",
+    "skills",
+    "experience",
+    "education",
+    "internships",
+    "certifications",
+    "achievements",
+  ];
+
   const detectedProjects = [];
 
   const lines = text
@@ -104,9 +118,15 @@ const extractProjects = (text) => {
         lowerLine.includes(keyword)
       );
 
+    const isSectionHeading =
+      blockedProjectHeadings.includes(
+        lowerLine
+      );
+
     if (
       hasProjectKeyword &&
-      line.length > 10
+      line.length > 10 &&
+      !isSectionHeading
     ) {
       detectedProjects.push(line);
     }
@@ -221,6 +241,14 @@ export const processResumePipeline =
       const experience =
         extractExperience(rawText);
 
+      const interviewQuestions =
+        await generateInterviewQuestions({
+          extractedText: cleanedText,
+          skills: extractedSkills,
+          projects,
+          experience,
+        });
+
       return {
         rawText: cleanedText,
 
@@ -243,6 +271,8 @@ export const processResumePipeline =
         projects,
 
         experience,
+
+        interviewQuestions,
       };
     } catch (error) {
       console.error(

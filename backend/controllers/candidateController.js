@@ -14,6 +14,8 @@ import { analyzeLinkedInConsistency } from "../services/ai/linkedinConsistencyEn
 
 import { analyzeAuthenticity } from "../services/ai/authenticityEngine.js";
 
+import generateInterviewQuestions from "../services/ai/interviewQuestionEngine.js";
+
 import {
   extractProfileLinksFromText,
   extractProfileLinksFromPdf,
@@ -155,6 +157,9 @@ export const uploadCandidateResume =
           experience:
             parsedResumeData.experience,
 
+          interviewQuestions:
+            parsedResumeData.interviewQuestions,
+
           aiAnalysis:
             centralizedAIAnalysis,
         });
@@ -162,7 +167,7 @@ export const uploadCandidateResume =
 
               /*
         ==========================================
-        Code2 VERIFICATION
+        GitHub VERIFICATION
         ==========================================
       */
 
@@ -172,7 +177,7 @@ export const uploadCandidateResume =
 
       /*
         ==========================================
-        CONDITIONAL Code2 ANALYSIS
+        CONDITIONAL GitHub ANALYSIS
         ==========================================
       */
 
@@ -182,6 +187,17 @@ export const uploadCandidateResume =
             githubUrl
           );
       }
+
+      const interviewQuestions =
+        await generateInterviewQuestions({
+          skills:
+            parsedResumeData.extractedSkills,
+
+          projects:
+            parsedResumeData.projects,
+
+            githubAnalysis,
+        });
 
             /*
         ==========================================
@@ -330,6 +346,14 @@ export const uploadCandidateResume =
           */
 
           recruiterInsights,
+
+          /*
+            ==========================================
+            INTERVIEW QUESTIONS
+            ==========================================
+          */
+
+          interviewQuestions,
 
                     /*
             ==========================================

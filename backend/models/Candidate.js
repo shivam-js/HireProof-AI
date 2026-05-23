@@ -281,6 +281,11 @@ const candidateSchema = new mongoose.Schema(
         default: [],
       },
 
+      interviewQuestions: {
+        type: [String],
+        default: [],
+      },
+
     extractedText: {
       type: String,
       default: "",

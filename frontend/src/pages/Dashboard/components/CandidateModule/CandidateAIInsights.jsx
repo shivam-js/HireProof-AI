@@ -64,6 +64,12 @@ const CandidateAIInsights = () => {
     insights?.summary ||
     "AI recruiter analysis is being prepared.";
 
+  const interviewQuestions =
+    activeCandidate.interviewQuestions
+      ?.length > 0
+      ? activeCandidate.interviewQuestions
+      : [];
+
     const verificationProfiles = [
     {
       label: "LinkedIn",
@@ -821,6 +827,31 @@ const CandidateAIInsights = () => {
           )}
         </div>
       </div>
+
+      {interviewQuestions.length > 0 && (
+        <div className="mt-6 rounded-2xl border border-violet-500/20 bg-violet-500/5 p-6">
+          <div className="flex items-center gap-2">
+            <BrainCircuit className="text-violet-400" />
+
+            <h3 className="text-xl font-bold text-violet-400">
+              AI Interview Questions
+            </h3>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            {interviewQuestions.map(
+              (question, index) => (
+                <div
+                  key={index}
+                  className="rounded-xl border border-violet-500/10 bg-slate-900/40 p-4 text-slate-300"
+                >
+                  {index + 1}. {question}
+                </div>
+              )
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ============================= */}
       {/* Recruiter Decision */}
