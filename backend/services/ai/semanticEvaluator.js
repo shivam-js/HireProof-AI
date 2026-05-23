@@ -70,7 +70,7 @@ export const evaluateResumeSemantics = (
   // RESUME QUALITY
   // -----------------------------------
 
-  if (text.includes("github"))
+  if (text.includes("Code2"))
     resumeQuality += 5;
 
   if (text.includes("responsive"))

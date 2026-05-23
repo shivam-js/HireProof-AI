@@ -4,132 +4,453 @@ import { processResumePipeline } from "../services/pipeline/processResumePipelin
 
 import { analyzeCandidate } from "../services/ai/candidateAnalyzer.js";
 
-export const uploadCandidateResume = async (
-  req,
-  res
-) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({
+import generateRecruiterInsights from "../utils/recruiterInsightsEngine.js";
+
+import { analyzeGitHubProfile } from "../services/ai/githubVerificationEngine.js";
+
+import { analyzePortfolio } from "../services/ai/portfolioVerificationEngine.js";
+
+import { analyzeLinkedInConsistency } from "../services/ai/linkedinConsistencyEngine.js";
+
+import { analyzeAuthenticity } from "../services/ai/authenticityEngine.js";
+
+import {
+  extractProfileLinksFromText,
+  extractProfileLinksFromPdf,
+} from "../services/parsing/pdfParser.js";
+/*
+  ==========================================
+  UPLOAD CANDIDATE RESUME
+  ==========================================
+*/
+
+export const uploadCandidateResume =
+  async (req, res) => {
+    try {
+      /*
+        ==========================================
+        VALIDATION
+        ==========================================
+      */
+
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Resume file is required.",
+        });
+      }
+
+      /*
+        ==========================================
+        RESUME PIPELINE
+        ==========================================
+      */
+
+      const parsedResumeData =
+        await processResumePipeline(
+          req.file.path
+        );
+
+              /*
+        ==========================================
+        EXTERNAL PROFILE LINKS
+        ==========================================
+      */
+
+      const textLinks =
+        extractProfileLinksFromText(
+          parsedResumeData.rawText
+        );
+
+      const pdfLinks =
+        await extractProfileLinksFromPdf(
+          req.file.path
+        );
+
+      const extractedLinks = {
+        linkedinUrl:
+          pdfLinks.linkedinUrl ||
+          textLinks.linkedinUrl ||
+          "",
+
+        githubUrl:
+          pdfLinks.githubUrl ||
+          textLinks.githubUrl ||
+          "",
+
+        portfolioUrl:
+          pdfLinks.portfolioUrl ||
+          textLinks.portfolioUrl ||
+          "",
+      };
+
+      const {
+        linkedinUrl,
+        githubUrl,
+        portfolioUrl,
+      } = extractedLinks;
+
+
+
+      /*
+        ==========================================
+        AI ANALYSIS
+        ==========================================
+      */
+
+      const aiAnalysis =
+        await analyzeCandidate({
+          resumeText:
+            parsedResumeData.rawText,
+
+          extractedSkills:
+            parsedResumeData.extractedSkills,
+        });
+
+      /*
+        ==========================================
+        CENTRALIZED AI ANALYSIS OBJECT
+        ==========================================
+      */
+
+      const centralizedAIAnalysis =
+        {
+          candidateSummary:
+            aiAnalysis.candidateSummary,
+
+          technicalStrengths:
+            aiAnalysis.technicalStrengths,
+
+          weaknesses:
+            aiAnalysis.weaknesses,
+
+          hiringRecommendation:
+            aiAnalysis.hiringRecommendation,
+
+          interviewFocusAreas:
+            aiAnalysis.interviewFocusAreas,
+
+          decisionFactors:
+            aiAnalysis.decisionFactors,
+        };
+
+      /*
+        ==========================================
+        RECRUITER INSIGHTS
+        ==========================================
+      */
+
+      const recruiterInsights =
+        generateRecruiterInsights({
+          aiScore:
+            aiAnalysis.aiScore,
+
+          skills:
+            parsedResumeData.extractedSkills,
+
+          projects:
+            parsedResumeData.projects,
+
+          experience:
+            parsedResumeData.experience,
+
+          aiAnalysis:
+            centralizedAIAnalysis,
+        });
+
+
+              /*
+        ==========================================
+        Code2 VERIFICATION
+        ==========================================
+      */
+
+      let githubAnalysis = {
+        verified: false,
+      };
+
+      /*
+        ==========================================
+        CONDITIONAL Code2 ANALYSIS
+        ==========================================
+      */
+
+      if (githubUrl) {
+        githubAnalysis =
+          await analyzeGitHubProfile(
+            githubUrl
+          );
+      }
+
+            /*
+        ==========================================
+        PORTFOLIO VERIFICATION
+        ==========================================
+      */
+
+      let portfolioAnalysis = {
+        verified: false,
+      };
+
+      /*
+        ==========================================
+        CONDITIONAL PORTFOLIO ANALYSIS
+        ==========================================
+      */
+
+      if (portfolioUrl) {
+        portfolioAnalysis =
+          await analyzePortfolio(
+            portfolioUrl
+          );
+      }
+
+            /*
+        ==========================================
+        LINKEDIN CONSISTENCY
+        ==========================================
+      */
+
+      const linkedinConsistencyAnalysis =
+        analyzeLinkedInConsistency({
+          linkedinUrl,
+
+          githubUrl,
+
+          portfolioUrl,
+
+          extractedSkills:
+            parsedResumeData.extractedSkills,
+
+          experience:
+            parsedResumeData.experience,
+        });
+
+              /*
+        ==========================================
+        AUTHENTICITY ANALYSIS
+        ==========================================
+      */
+
+      const authenticityAnalysis =
+        analyzeAuthenticity({
+          githubAnalysis,
+
+          portfolioAnalysis,
+
+          linkedinConsistencyAnalysis,
+        });
+
+      /*
+        ==========================================
+        SAVE CANDIDATE
+        ==========================================
+      */
+
+      const candidate =
+        await Candidate.create({
+          candidateName:
+            parsedResumeData.extractedName,
+
+          email:
+            parsedResumeData.extractedEmail ||
+            "",
+
+          phone:
+            parsedResumeData.extractedPhone ||
+            "",
+
+          linkedinUrl,
+
+          githubUrl,
+
+          portfolioUrl,
+
+          skills:
+            parsedResumeData.extractedSkills,
+
+          /*
+            ==========================================
+            PROJECTS & EXPERIENCE
+            ==========================================
+          */
+
+          projects:
+            parsedResumeData.projects,
+
+          experience:
+            parsedResumeData.experience,
+
+          /*
+            ==========================================
+            RESUME FILE
+            ==========================================
+          */
+
+          resumePath:
+            req.file.path,
+
+          resumeUrl: `/uploads/resumes/${req.file.filename}`,
+
+          originalFileName:
+            req.file.originalname,
+
+          fileSize:
+            req.file.size,
+
+          /*
+            ==========================================
+            AI SYSTEM
+            ==========================================
+          */
+
+          aiScore:
+            aiAnalysis.aiScore,
+
+          scoreCategory:
+            aiAnalysis.scoreCategory,
+
+          aiStatus:
+            "Analyzed",
+
+          /*
+            ==========================================
+            CENTRALIZED AI ANALYSIS
+            ==========================================
+          */
+
+          aiAnalysis:
+            centralizedAIAnalysis,
+
+          /*
+            ==========================================
+            RECRUITER INSIGHTS
+            ==========================================
+          */
+
+          recruiterInsights,
+
+                    /*
+            ==========================================
+            Code2 VERIFICATION
+            ==========================================
+          */
+
+          githubAnalysis,
+
+                    /*
+            ==========================================
+            PORTFOLIO VERIFICATION
+            ==========================================
+          */
+
+          portfolioAnalysis,
+
+                    /*
+            ==========================================
+            LINKEDIN CONSISTENCY
+            ==========================================
+          */
+
+          linkedinConsistencyAnalysis,
+
+                    /*
+            ==========================================
+            AUTHENTICITY ANALYSIS
+            ==========================================
+          */
+
+          authenticityAnalysis,
+
+          /*
+            ==========================================
+            RAW TEXT
+            ==========================================
+          */
+
+          extractedText:
+            parsedResumeData.rawText,
+        });
+
+      /*
+        ==========================================
+        SUCCESS RESPONSE
+        ==========================================
+      */
+
+      return res.status(201).json({
+        success: true,
+
+        message:
+          "Candidate uploaded successfully.",
+
+        candidate,
+      });
+    } catch (error) {
+      console.error(
+        "Candidate Upload Error:",
+        error
+      );
+
+      return res.status(500).json({
         success: false,
-        message: "Resume file is required.",
+
+        message:
+          "Candidate upload failed.",
       });
     }
+  };
 
-    const parsedResumeData =
-      await processResumePipeline(req.file.path);
+/*
+  ==========================================
+  GET ALL CANDIDATES
+  ==========================================
+*/
 
-    const aiAnalysis =
-      await analyzeCandidate({
-        resumeText:
-          parsedResumeData.rawText,
+export const getAllCandidates =
+  async (req, res) => {
+    try {
+      const candidates =
+        await Candidate.find().sort({
+          createdAt: -1,
+        });
 
-        extractedSkills:
-          parsedResumeData.extractedSkills,
+      return res.status(200).json({
+        success: true,
+
+        candidates,
       });
+    } catch (error) {
+      console.error(
+        "Get Candidates Error:",
+        error
+      );
 
-    const candidate = await Candidate.create({
-      candidateName:
-        parsedResumeData.extractedName,
+      return res.status(500).json({
+        success: false,
 
-      email:
-        parsedResumeData.extractedEmail || "",
-
-      phone:
-        parsedResumeData.extractedPhone || "",
-
-      skills:
-        parsedResumeData.extractedSkills,
-
-      resumePath: req.file.path,
-
-      resumeUrl: `/uploads/resumes/${req.file.filename}`,
-
-      originalFileName:
-        req.file.originalname,
-
-      fileSize: req.file.size,
-
-      aiScore: aiAnalysis.aiScore,
-
-      scoreCategory:
-        aiAnalysis.scoreCategory,
-
-      aiStatus: "Analyzed",
-
-      aiAnalysis: {
-        candidateSummary:
-          aiAnalysis.candidateSummary,
-
-        technicalStrengths:
-          aiAnalysis.technicalStrengths,
-
-        weaknesses:
-          aiAnalysis.weaknesses,
-
-        hiringRecommendation:
-          aiAnalysis.hiringRecommendation,
-
-        interviewFocusAreas:
-          aiAnalysis.interviewFocusAreas,
-      },
-    });
-
-    return res.status(201).json({
-      success: true,
-      message:
-        "Candidate uploaded successfully.",
-      candidate,
-    });
-  } catch (error) {
-    console.error(
-      "Candidate Upload Error:",
-      error
-    );
-
-    return res.status(500).json({
-      success: false,
-      message:
-        "Candidate upload failed.",
-    });
-  }
-};
-
-export const getAllCandidates = async (
-  req,
-  res
-) => {
-  try {
-    const candidates =
-      await Candidate.find().sort({
-        createdAt: -1,
+        message:
+          "Failed to fetch candidates.",
       });
+    }
+  };
 
-    return res.status(200).json({
-      success: true,
-      candidates,
-    });
-  } catch (error) {
-    console.error(
-      "Get Candidates Error:",
-      error
-    );
-
-    return res.status(500).json({
-      success: false,
-      message:
-        "Failed to fetch candidates.",
-    });
-  }
-};
+/*
+  ==========================================
+  UPDATE RECRUITMENT STATUS
+  ==========================================
+*/
 
 export const updateRecruitmentStatus =
   async (req, res) => {
     try {
-      const { candidateId } = req.params;
+      const { candidateId } =
+        req.params;
 
-      const { recruitmentStatus } =
-        req.body;
+      const {
+        recruitmentStatus,
+      } = req.body;
 
       const candidate =
         await Candidate.findByIdAndUpdate(
@@ -137,12 +458,15 @@ export const updateRecruitmentStatus =
           {
             recruitmentStatus,
           },
-          { new: true }
+          {
+            new: true,
+          }
         );
 
       if (!candidate) {
         return res.status(404).json({
           success: false,
+
           message:
             "Candidate not found.",
         });
@@ -150,6 +474,7 @@ export const updateRecruitmentStatus =
 
       return res.status(200).json({
         success: true,
+
         candidate,
       });
     } catch (error) {
@@ -160,19 +485,28 @@ export const updateRecruitmentStatus =
 
       return res.status(500).json({
         success: false,
+
         message:
           "Failed to update recruitment status.",
       });
     }
   };
 
+/*
+  ==========================================
+  UPDATE RECRUITER NOTES
+  ==========================================
+*/
+
 export const updateRecruiterNotes =
   async (req, res) => {
     try {
-      const { candidateId } = req.params;
+      const { candidateId } =
+        req.params;
 
-      const { recruiterNotes } =
-        req.body;
+      const {
+        recruiterNotes,
+      } = req.body;
 
       const candidate =
         await Candidate.findByIdAndUpdate(
@@ -180,12 +514,15 @@ export const updateRecruiterNotes =
           {
             recruiterNotes,
           },
-          { new: true }
+          {
+            new: true,
+          }
         );
 
       if (!candidate) {
         return res.status(404).json({
           success: false,
+
           message:
             "Candidate not found.",
         });
@@ -193,6 +530,7 @@ export const updateRecruiterNotes =
 
       return res.status(200).json({
         success: true,
+
         candidate,
       });
     } catch (error) {
@@ -203,6 +541,7 @@ export const updateRecruiterNotes =
 
       return res.status(500).json({
         success: false,
+
         message:
           "Failed to update recruiter notes.",
       });

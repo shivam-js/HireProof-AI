@@ -5,7 +5,7 @@ const steps = [
     number: "01",
     title: "Upload candidate profile",
     description:
-      "Recruiters upload resumes, portfolio links, GitHub profiles, or candidate details into HireProof AI.",
+      "Recruiters upload resumes, portfolio links, Code2 profiles, or candidate details into HireProof AI.",
   },
   {
     number: "02",

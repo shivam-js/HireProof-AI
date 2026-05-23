@@ -425,7 +425,7 @@ const evaluateRecruiterConfidence =
       score += 5;
 
     if (
-      text.includes("github")
+      text.includes("Code2")
     )
       score += 5;
 

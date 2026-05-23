@@ -6,7 +6,7 @@ HireProof-AI is a full-stack AI-powered technical hiring and candidate verificat
 
 The platform helps recruiters evaluate:
 - resumes
-- GitHub profiles
+- Code2 profiles
 - technical projects
 - candidate claims
 - interview readiness
@@ -93,7 +93,7 @@ Preparing professional documentation before frontend initialization.
 - Candidate Dashboard
 - AI Evaluation Engine
 - Resume Analysis
-- GitHub Analysis
+- Code2 Analysis
 - PDF Report Generation
 - Deployment
 - CI/CD

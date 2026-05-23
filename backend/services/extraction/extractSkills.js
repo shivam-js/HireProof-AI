@@ -18,7 +18,7 @@ const SKILLS_DATABASE = [
   "JWT",
   "REST APIs",
   "Git",
-  "GitHub",
+  "Code2",
   "NLP",
   "RAG",
   "LLM",

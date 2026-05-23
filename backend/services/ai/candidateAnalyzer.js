@@ -1,370 +1,731 @@
 import { evaluateResumeSemantics } from "./semanticEvaluator.js";
+
 import { extractResumeSections } from "./resumeSectionExtractor.js";
+
 import { evaluateATSResume } from "./atsEvaluationEngine.js";
 
-
-const SKILL_WEIGHTS = {
-  react: 15,
-  "node.js": 15,
-  node: 15,
-  express: 10,
-  mongodb: 10,
-  mongoose: 10,
-  javascript: 10,
-  typescript: 10,
-  tailwind: 8,
-  redux: 8,
-  nextjs: 12,
-  next: 12,
-  docker: 15,
-  aws: 20,
-  api: 10,
-  apis: 10,
-  rest: 10,
-  git: 5,
-  github: 5,
-  sql: 10,
-  firebase: 8,
-  python: 10,
-  java: 10,
-  internship: 15,
-};
-
-const SUMMARY_TEMPLATES = [
-  "Candidate demonstrates balanced MERN-stack exposure with frontend architecture and backend API integration understanding.",
-  "Candidate shows practical software development capability with modern web technology exposure.",
-  "Candidate presents solid engineering fundamentals with hands-on project implementation experience.",
-  "Candidate reflects growing full-stack development capability with scalable application understanding.",
-];
+/*
+  ==========================================
+  STRENGTH LIBRARY
+  ==========================================
+*/
 
 const STRENGTH_LIBRARY = {
-  react: "Strong frontend engineering skills using React ecosystem.",
-  node: "Backend API development understanding using Node.js.",
-  express: "Experience building Express-based server architecture.",
-  mongodb: "Knowledge of MongoDB database design and integration.",
-  docker: "Containerization and deployment workflow exposure.",
-  aws: "Cloud infrastructure and AWS ecosystem familiarity.",
-  javascript: "Strong JavaScript development foundation.",
-  typescript: "Type-safe frontend/backend development understanding.",
-  api: "REST API integration and architecture understanding.",
-  git: "Version control workflow familiarity using Git.",
+  react:
+    "Strong frontend engineering skills using React ecosystem.",
+
+  node:
+    "Backend API development understanding using Node.js.",
+
+  express:
+    "Experience building Express-based server architecture.",
+
+  mongodb:
+    "Knowledge of MongoDB database design and integration.",
+
+  docker:
+    "Containerization and deployment workflow exposure.",
+
+  aws:
+    "Cloud infrastructure and AWS ecosystem familiarity.",
+
+  javascript:
+    "Strong JavaScript development foundation.",
+
+  typescript:
+    "Type-safe frontend/backend development understanding.",
+
+  api:
+    "REST API integration and architecture understanding.",
+
+  git:
+    "Version control workflow familiarity using Git.",
 };
 
-const WEAKNESS_LIBRARY = [
-  "Resume lacks measurable project impact metrics.",
-  "Limited evidence of production-scale deployment experience.",
-  "Cloud infrastructure exposure could be strengthened.",
-  "Testing and automation experience is not strongly demonstrated.",
-  "Resume could better highlight scalability contributions.",
-];
+/*
+  ==========================================
+  ENGINEERING SIGNAL DETECTION
+  ==========================================
+*/
 
-const INTERVIEW_FOCUS_LIBRARY = [
-  "Assess real-world API architecture understanding.",
-  "Evaluate debugging and problem-solving depth.",
-  "Discuss scalability handling in previous projects.",
-  "Validate frontend and backend integration knowledge.",
-  "Assess deployment workflow familiarity.",
-  "Evaluate database schema design understanding.",
-];
-
-const HIRING_RECOMMENDATIONS = {
-  top:
-    "Strong candidate with high recruiter consideration potential.",
-  strong:
-    "Candidate demonstrates promising technical alignment for shortlisting.",
-  average:
-    "Candidate shows foundational skills but requires deeper evaluation.",
-};
-
-const normalizeArray = (arr, fallbackItems, minimum = 3) => {
-  const unique = [...new Set(arr)];
-
-  while (unique.length < minimum) {
-    const fallback =
-      fallbackItems[Math.floor(Math.random() * fallbackItems.length)];
-
-    if (!unique.includes(fallback)) {
-      unique.push(fallback);
-    }
-  }
-
-  return unique.slice(0, minimum);
-};
-
-const calculateScore = (
-  resumeText,
-  extractedSkills = []
+const detectEngineeringSignals = (
+  resumeText
 ) => {
-  const text = resumeText.toLowerCase();
+  const text =
+    resumeText.toLowerCase();
 
-  let score = 25;
+  return {
+    hasDeployment:
+      text.includes("vercel") ||
+      text.includes("netlify") ||
+      text.includes("render") ||
+      text.includes("railway") ||
+      text.includes("deployment"),
 
-  // -----------------------------
-  // CORE SKILL SCORING
-  // -----------------------------
+    hasArchitecture:
+      text.includes("architecture") ||
+      text.includes("scalable") ||
+      text.includes("microservice") ||
+      text.includes("system design"),
 
-  const uniqueSkills = [
-    ...new Set(
-      extractedSkills.map((skill) =>
-        skill.toLowerCase()
-      )
-    ),
-  ];
+    hasLeadership:
+      text.includes("lead") ||
+      text.includes("mentored") ||
+      text.includes("ownership") ||
+      text.includes("collaborated"),
 
-  let coreSkillScore = 0;
+    hasOptimization:
+      text.includes("optimized") ||
+      text.includes("performance") ||
+      text.includes("efficient") ||
+      text.includes("caching"),
 
-  uniqueSkills.forEach((skill) => {
-    if (SKILL_WEIGHTS[skill]) {
-      coreSkillScore +=
-        SKILL_WEIGHTS[skill];
+    hasTesting:
+      text.includes("testing") ||
+      text.includes("jest") ||
+      text.includes("cypress"),
+
+    hasRealtime:
+      text.includes("socket") ||
+      text.includes("realtime") ||
+      text.includes("websocket"),
+
+    hasCI:
+      text.includes("ci/cd") ||
+      text.includes("pipeline") ||
+      text.includes("Code2 actions"),
+  };
+};
+
+/*
+  ==========================================
+  INTERVIEW FOCUS GENERATOR
+  ==========================================
+*/
+
+const generateInterviewFocusAreas =
+  (
+    resumeText,
+    skills,
+    signals
+  ) => {
+    const areas = [];
+
+    if (
+      skills.includes("React")
+    ) {
+      areas.push(
+        "Evaluate React component architecture and state management understanding."
+      );
     }
-  });
 
-  // Strict normalization
-  if (coreSkillScore > 25) {
-    coreSkillScore =
-      25 +
-      (coreSkillScore - 25) * 0.15;
-  }
+    if (
+      skills.includes("Node.js")
+    ) {
+      areas.push(
+        "Assess backend API design and authentication handling."
+      );
+    }
 
-  score += Math.min(coreSkillScore, 32);
+    if (
+      skills.includes("MongoDB")
+    ) {
+      areas.push(
+        "Evaluate database schema optimization and scalability understanding."
+      );
+    }
 
-  // -----------------------------
-  // PROJECT COMPLEXITY
-  // -----------------------------
+    if (
+      signals.hasDeployment
+    ) {
+      areas.push(
+        "Discuss production deployment workflow and hosting decisions."
+      );
+    }
 
-  let projectScore = 0;
+    if (
+      signals.hasArchitecture
+    ) {
+      areas.push(
+        "Evaluate scalable architecture and system design understanding."
+      );
+    }
 
-  if (text.includes("jwt"))
-    projectScore += 2;
+    if (
+      signals.hasRealtime
+    ) {
+      areas.push(
+        "Assess realtime communication and websocket implementation knowledge."
+      );
+    }
 
-  if (text.includes("authentication"))
-    projectScore += 4;
+    if (
+      areas.length < 4
+    ) {
+      areas.push(
+        "Assess debugging and problem-solving depth."
+      );
+    }
 
-  if (text.includes("rest api"))
-    projectScore += 4;
+    return [
+      ...new Set(areas),
+    ].slice(0, 5);
+  };
 
-  if (text.includes("rag"))
-    projectScore += 3;
+/*
+  ==========================================
+  CONTEXTUAL WEAKNESS GENERATOR
+  ==========================================
+*/
 
-  if (text.includes("llm"))
-    projectScore += 3;
+const generateWeaknesses = (
+  resumeText,
+  extractedSkills,
+  aiScore,
+  signals
+) => {
+  const weaknesses = [];
 
-  if (text.includes("ai"))
-    projectScore += 2;
+  const text =
+    resumeText.toLowerCase();
 
-  if (text.includes("mongodb"))
-    projectScore += 3;
-
-  if (text.includes("deployment"))
-    projectScore += 2;
-
-  if (text.includes("scalable"))
-    projectScore += 1;
-
-  score += Math.min(projectScore, 14);
-
-  // -----------------------------
-  // EXPERIENCE SIGNALS
-  // -----------------------------
-
-  let experienceScore = 0;
-
-  if (text.includes("internship"))
-    experienceScore += 4;
-
-  if (text.includes("team"))
-    experienceScore += 2;
-
-  if (text.includes("lead"))
-    experienceScore += 2;
-
-  if (text.includes("collaboration"))
-    experienceScore += 2;
-
-  score += Math.min(
-    experienceScore,
-    10
-  );
-
-  // -----------------------------
-  // RESUME QUALITY
-  // -----------------------------
-
-  let resumeQuality = 0;
-
-  if (text.includes("project"))
-    resumeQuality += 2;
-
-  if (text.includes("github"))
-    resumeQuality += 2;
-
-  if (text.includes("deployed"))
-    resumeQuality += 3;
-
-  if (text.includes("responsive"))
-    resumeQuality += 2;
-
-  if (text.includes("architecture"))
-    resumeQuality += 3;
-
-  score += Math.min(
-    resumeQuality,
-    10
-  );
-
-  // -----------------------------
-  // PENALTIES
-  // -----------------------------
-
-  let penalty = 0;
+  /*
+    --------------------------------------
+    IMPACT METRICS
+    --------------------------------------
+  */
 
   if (
     !text.includes("%") &&
     !text.includes("improved") &&
-    !text.includes("increased")
+    !text.includes("optimized")
   ) {
-    penalty += 4;
+    weaknesses.push(
+      "Resume lacks measurable engineering impact metrics and quantified technical achievements."
+    );
   }
+
+  /*
+    --------------------------------------
+    TESTING
+    --------------------------------------
+  */
 
   if (
-    !text.includes("testing") &&
-    !text.includes("jest")
+    !signals.hasTesting
   ) {
-    penalty += 3;
+    weaknesses.push(
+      "Testing and application reliability practices are not clearly demonstrated."
+    );
   }
+
+  /*
+    --------------------------------------
+    DEPLOYMENT
+    --------------------------------------
+  */
 
   if (
-    !text.includes("aws") &&
-    !text.includes("docker")
+    !signals.hasDeployment
   ) {
-    penalty += 3;
+    weaknesses.push(
+      "Production deployment and hosting exposure could be strengthened."
+    );
   }
 
-  score -= penalty;
+  /*
+    --------------------------------------
+    ARCHITECTURE
+    --------------------------------------
+  */
 
-  // -----------------------------
-  // FINAL STRICT NORMALIZATION
-  // -----------------------------
+  if (
+    !signals.hasArchitecture
+  ) {
+    weaknesses.push(
+      "Resume could better demonstrate scalable architecture and system design exposure."
+    );
+  }
 
-  if (score > 88) score = 88;
+  /*
+    --------------------------------------
+    LEADERSHIP
+    --------------------------------------
+  */
 
-  if (score < 35) score = 35;
+  if (
+    !signals.hasLeadership
+  ) {
+    weaknesses.push(
+      "Engineering ownership and collaboration contributions are not strongly highlighted."
+    );
+  }
 
-  return Math.round(score);
+  /*
+    --------------------------------------
+    OPTIMIZATION
+    --------------------------------------
+  */
+
+  if (
+    !signals.hasOptimization
+  ) {
+    weaknesses.push(
+      "Performance optimization and engineering efficiency improvements are not clearly demonstrated."
+    );
+  }
+
+  /*
+    --------------------------------------
+    ATS QUALITY
+    --------------------------------------
+  */
+
+  if (aiScore < 75) {
+    weaknesses.push(
+      "Resume ATS optimization can be improved for stronger recruiter visibility."
+    );
+  }
+
+  /*
+    --------------------------------------
+    HIGH SCORE CALIBRATION
+    --------------------------------------
+  */
+
+  if (
+    aiScore >= 85
+  ) {
+    weaknesses.push(
+      "Candidate appears technically strong, but deeper scalability and system design evaluation is recommended during interviews."
+    );
+  }
+
+  return [
+    ...new Set(weaknesses),
+  ].slice(0, 6);
 };
 
-const determineScoreCategory = (score) => {
-  if (score >= 85) return "Top Match";
-  if (score >= 70) return "Strong Match";
+/*
+  ==========================================
+  DECISION FACTOR GENERATOR
+  ==========================================
+*/
+
+const generateDecisionFactors = (
+  aiScore,
+  signals,
+  extractedSkills
+) => {
+  const factors = [];
+
+  /*
+    --------------------------------------
+    ATS SCORE
+    --------------------------------------
+  */
+
+  if (aiScore >= 85) {
+    factors.push(
+      "ATS optimization score exceeded strong recruiter benchmark."
+    );
+  }
+
+  /*
+    --------------------------------------
+    FULLSTACK ALIGNMENT
+    --------------------------------------
+  */
+
+  const hasFrontend =
+    extractedSkills.includes(
+      "React"
+    );
+
+  const hasBackend =
+    extractedSkills.includes(
+      "Node.js"
+    );
+
+  if (
+    hasFrontend &&
+    hasBackend
+  ) {
+    factors.push(
+      "Strong frontend and backend engineering alignment detected."
+    );
+  }
+
+  /*
+    --------------------------------------
+    DEPLOYMENT
+    --------------------------------------
+  */
+
+  if (
+    signals.hasDeployment
+  ) {
+    factors.push(
+      "Production deployment and hosting workflow exposure identified."
+    );
+  }
+
+  /*
+    --------------------------------------
+    ARCHITECTURE
+    --------------------------------------
+  */
+
+  if (
+    signals.hasArchitecture
+  ) {
+    factors.push(
+      "Scalable architecture and system design terminology detected."
+    );
+  }
+
+  /*
+    --------------------------------------
+    TESTING
+    --------------------------------------
+  */
+
+  if (
+    !signals.hasTesting
+  ) {
+    factors.push(
+      "Testing and application reliability practices were not strongly demonstrated."
+    );
+  }
+
+  /*
+    --------------------------------------
+    LEADERSHIP
+    --------------------------------------
+  */
+
+  if (
+    signals.hasLeadership
+  ) {
+    factors.push(
+      "Leadership and collaboration indicators identified within resume content."
+    );
+  }
+
+  return [
+    ...new Set(factors),
+  ].slice(0, 5);
+};
+
+/*
+  ==========================================
+  SUMMARY GENERATOR
+  ==========================================
+*/
+
+const generateSummary = (
+  aiScore,
+  extractedSkills,
+  signals
+) => {
+  const hasFrontend =
+    extractedSkills.includes(
+      "React"
+    );
+
+  const hasBackend =
+    extractedSkills.includes(
+      "Node.js"
+    );
+
+  if (
+    aiScore >= 85 &&
+    hasFrontend &&
+    hasBackend &&
+    signals.hasDeployment
+  ) {
+    return "Candidate demonstrates strong full-stack engineering capability with practical frontend, backend, and deployment workflow exposure.";
+  }
+
+  if (
+    signals.hasArchitecture
+  ) {
+    return "Candidate shows promising engineering maturity with scalable architecture and implementation exposure.";
+  }
+
+  if (
+    aiScore >= 70
+  ) {
+    return "Candidate reflects balanced software engineering fundamentals with practical development understanding.";
+  }
+
+  return "Candidate demonstrates foundational engineering exposure with potential for technical growth.";
+};
+
+/*
+  ==========================================
+  SCORE CATEGORY
+  ==========================================
+*/
+
+const determineScoreCategory = (
+  score
+) => {
+  if (score >= 85)
+    return "Top Match";
+
+  if (score >= 70)
+    return "Strong Match";
+
   return "Average Match";
 };
 
-export const analyzeCandidate = async ({
-  resumeText,
-  extractedSkills = [],
-}) => {
-  try {
+/*
+  ==========================================
+  MAIN ANALYZER
+  ==========================================
+*/
 
-    const semanticAnalysis =evaluateResumeSemantics(resumeText);
+export const analyzeCandidate =
+  async ({
+    resumeText,
+    extractedSkills = [],
+  }) => {
+    try {
+      const semanticAnalysis =
+        evaluateResumeSemantics(
+          resumeText
+        );
 
-    const resumeSections =extractResumeSections(resumeText);
+      const resumeSections =
+        extractResumeSections(
+          resumeText
+        );
 
-    const atsEvaluation =evaluateATSResume({resumeText, resumeSections, extractedSkills,});
+      const atsEvaluation =
+        evaluateATSResume({
+          resumeText,
+          resumeSections,
+          extractedSkills,
+        });
 
-    const aiScore =atsEvaluation.finalScore;
+      const aiScore =
+        atsEvaluation.finalScore;
 
-    const scoreCategory = determineScoreCategory(aiScore);
+      const scoreCategory =
+        determineScoreCategory(
+          aiScore
+        );
 
-    const candidateSummary =
-      SUMMARY_TEMPLATES[
-        Math.floor(Math.random() * SUMMARY_TEMPLATES.length)
-      ];
+      /*
+        ==========================================
+        ENGINEERING SIGNALS
+        ==========================================
+      */
 
-    const technicalStrengths = [];
+      const signals =
+        detectEngineeringSignals(
+          resumeText
+        );
 
-    extractedSkills.forEach((skill) => {
-      const normalized = skill.toLowerCase();
+        /*
+        ==========================================
+        DECISION FACTORS
+        ==========================================
+      */
 
-      if (STRENGTH_LIBRARY[normalized]) {
-        technicalStrengths.push(STRENGTH_LIBRARY[normalized]);
+      const decisionFactors =
+        generateDecisionFactors(
+          aiScore,
+          signals,
+          extractedSkills
+        );
+
+        
+      /*
+        ==========================================
+        SUMMARY
+        ==========================================
+      */
+
+      const candidateSummary =
+        generateSummary(
+          aiScore,
+          extractedSkills,
+          signals
+        );
+
+      /*
+        ==========================================
+        STRENGTHS
+        ==========================================
+      */
+
+      const technicalStrengths =
+        [];
+
+      extractedSkills.forEach(
+        (skill) => {
+          const normalized =
+            skill.toLowerCase();
+
+          if (
+            STRENGTH_LIBRARY[
+              normalized
+            ]
+          ) {
+            technicalStrengths.push(
+              STRENGTH_LIBRARY[
+                normalized
+              ]
+            );
+          }
+        }
+      );
+
+      /*
+        ==========================================
+        ADVANCED ENGINEERING SIGNALS
+        ==========================================
+      */
+
+      if (
+        signals.hasDeployment
+      ) {
+        technicalStrengths.push(
+          "Demonstrates deployment and production hosting workflow familiarity."
+        );
       }
-    });
 
-    const weaknesses = [];
-    const interviewFocusAreas = [];
-
-    while (weaknesses.length < 3) {
-      const item =
-        WEAKNESS_LIBRARY[
-          Math.floor(Math.random() * WEAKNESS_LIBRARY.length)
-        ];
-
-      if (!weaknesses.includes(item)) {
-        weaknesses.push(item);
+      if (
+        signals.hasArchitecture
+      ) {
+        technicalStrengths.push(
+          "Shows understanding of scalable architecture and engineering system design concepts."
+        );
       }
-    }
 
-    while (interviewFocusAreas.length < 3) {
-      const item =
-        INTERVIEW_FOCUS_LIBRARY[
-          Math.floor(Math.random() * INTERVIEW_FOCUS_LIBRARY.length)
-        ];
-
-      if (!interviewFocusAreas.includes(item)) {
-        interviewFocusAreas.push(item);
+      if (
+        signals.hasOptimization
+      ) {
+        technicalStrengths.push(
+          "Demonstrates awareness of performance optimization and engineering efficiency improvements."
+        );
       }
+
+      /*
+        ==========================================
+        WEAKNESSES
+        ==========================================
+      */
+
+      const weaknesses =
+        generateWeaknesses(
+          resumeText,
+          extractedSkills,
+          aiScore,
+          signals
+        );
+
+      /*
+        ==========================================
+        INTERVIEW FOCUS
+        ==========================================
+      */
+
+      const interviewFocusAreas =
+        generateInterviewFocusAreas(
+          resumeText,
+          extractedSkills,
+          signals
+        );
+
+      /*
+        ==========================================
+        HIRING RECOMMENDATION
+        ==========================================
+      */
+
+      let hiringRecommendation =
+        "Candidate requires deeper technical evaluation before recruiter shortlisting.";
+
+      if (
+        scoreCategory ===
+        "Top Match"
+      ) {
+        hiringRecommendation =
+          "Strong candidate with high recruiter consideration potential.";
+      }
+
+      if (
+        scoreCategory ===
+        "Strong Match"
+      ) {
+        hiringRecommendation =
+          "Candidate demonstrates promising technical alignment for shortlisting.";
+      }
+
+      return {
+        candidateSummary,
+
+        technicalStrengths:
+          [
+            ...new Set(
+              technicalStrengths
+            ),
+          ].slice(0, 7),
+
+        weaknesses,
+
+        hiringRecommendation,
+
+        interviewFocusAreas,
+
+        decisionFactors,
+
+        aiScore,
+
+        semanticAnalysis,
+
+        resumeSections,
+
+        atsEvaluation,
+
+        scoreCategory,
+
+        aiStatus: "completed",
+      };
+    } catch (error) {
+      console.error(
+        "AI Candidate Analysis Error:",
+        error
+      );
+
+      return {
+        candidateSummary:
+          "AI analysis temporarily unavailable for this candidate.",
+
+        technicalStrengths: [
+          "Resume parsing completed successfully.",
+        ],
+
+        weaknesses: [
+          "Detailed AI analysis unavailable.",
+        ],
+
+        hiringRecommendation:
+          "Manual recruiter review recommended.",
+
+        interviewFocusAreas: [
+          "Assess technical fundamentals manually.",
+        ],
+
+        aiScore: 60,
+
+        scoreCategory:
+          "Average Match",
+
+        aiStatus: "fallback",
+      };
     }
-
-    const normalizedStrengths = normalizeArray(
-      technicalStrengths,
-      Object.values(STRENGTH_LIBRARY),
-      3
-    );
-
-    let hiringRecommendation = HIRING_RECOMMENDATIONS.average;
-
-    if (scoreCategory === "Top Match") {
-      hiringRecommendation = HIRING_RECOMMENDATIONS.top;
-    }
-
-    if (scoreCategory === "Strong Match") {
-      hiringRecommendation = HIRING_RECOMMENDATIONS.strong;
-    }
-
-    return {
-      candidateSummary,
-      technicalStrengths: normalizedStrengths,
-      weaknesses,
-      hiringRecommendation,
-      interviewFocusAreas,
-      aiScore,
-      semanticAnalysis,
-      resumeSections,
-      atsEvaluation,
-      scoreCategory,
-      aiStatus: "completed",
-    };
-  } catch (error) {
-    console.error("AI Candidate Analysis Error:", error);
-
-    return {
-      candidateSummary:
-        "AI analysis temporarily unavailable for this candidate.",
-      technicalStrengths: [
-        "Resume parsing completed successfully.",
-      ],
-      weaknesses: [
-        "Detailed AI analysis unavailable.",
-      ],
-      hiringRecommendation:
-        "Manual recruiter review recommended.",
-      interviewFocusAreas: [
-        "Assess technical fundamentals manually.",
-      ],
-      aiScore: 60,
-      scoreCategory: "Average Match",
-      aiStatus: "fallback",
-    };
-  }
-};
+  };

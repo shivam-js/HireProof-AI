@@ -3,12 +3,17 @@ import {
   Download,
 } from "lucide-react";
 
+import { useCandidate } from "../../../../context/CandidateContext";
+
 const CandidateTable = ({
   candidates,
-  activeCandidate,
-  setactiveCandidate,
   handleStatusUpdate,
 }) => {
+  const {
+    activeCandidate,
+    setActiveCandidate,
+  } = useCandidate();
+
   const getScoreColor = (score) => {
     if (score >= 85) {
       return {
@@ -121,14 +126,13 @@ const CandidateTable = ({
                   <tr
                     key={candidate._id}
                     onClick={() =>
-                      setactiveCandidate(
+                      setActiveCandidate(
                         candidate
                       )
                     }
-                    className={`cursor-pointer border-b border-slate-800 transition hover:bg-slate-800/40 ${
-                      activeCandidate?._id ===
-                      candidate._id
-                        ? "bg-slate-800/60"
+                    className={`cursor-pointer border-b border-slate-800 transition-all duration-300 hover:bg-slate-800/40 ${
+                      activeCandidate?._id === candidate._id
+                        ? "bg-slate-800/80 border-l-4 border-l-cyan-400 shadow-[0_0_25px_rgba(34,211,238,0.15)]"
                         : ""
                     }`}
                   >

@@ -149,7 +149,7 @@ HireProof-AI/
 ## 1️⃣ Clone Repository
 
 ```bash
-git clone https://github.com/shivam-js/HireProof-AI.git
+git clone https://Code2.com/shivam-js/HireProof-AI.git
 ```
 
 ---
@@ -246,8 +246,8 @@ The goal is to bridge the gap between traditional keyword-based ATS systems and 
 
 AI & Full Stack Developer
 
-GitHub:
-https://github.com/shivam-js
+Code2:
+https://Code2.com/shivam-js
 
 ---
 

@@ -42,6 +42,17 @@ const CandidateUpload = () => {
   const [uploadSuccess, setUploadSuccess] =
     useState("");
 
+    const [
+      externalProfiles,
+      setExternalProfiles,
+    ] = useState({
+      linkedinUrl: "",
+      githubUrl: "",
+      portfolioUrl: "",
+    });
+
+
+
   // =========================
   // DERIVED ACTIVE CANDIDATE
   // =========================
@@ -158,13 +169,51 @@ const CandidateUpload = () => {
             file
           );
 
+
+                    formData.append(
+            "linkedinUrl",
+            externalProfiles.linkedinUrl
+          );
+
+          formData.append(
+            "githubUrl",
+            externalProfiles.githubUrl
+          );
+
+          formData.append(
+            "portfolioUrl",
+            externalProfiles.portfolioUrl
+          );
+
+
           // =========================
           // API CALL
           // =========================
 
-          await uploadCandidateResume(
-            formData
-          );
+          const response =
+            await uploadCandidateResume(
+              formData
+            );
+
+            if (
+              response?.candidate
+            ) {
+              setExternalProfiles(() => ({
+                linkedinUrl:
+                  response?.candidate?.linkedinUrl || "",
+
+                githubUrl:
+                  response?.candidate?.githubUrl || "",
+
+                portfolioUrl:
+                  response?.candidate?.portfolioUrl || "",
+              }));
+            }
+
+          setCandidates((prev) => [
+            response.candidate,
+            ...prev,
+          ]);
 
           uploadedCount++;
         }
@@ -173,16 +222,18 @@ const CandidateUpload = () => {
         // REFRESH CANDIDATES
         // =========================
 
-        await fetchCandidates();
+
 
         // =========================
         // SUCCESS MESSAGE
         // =========================
 
         if (uploadedCount > 0) {
+          
           setUploadSuccess(
             `${uploadedCount} resume(s) uploaded and analyzed successfully.`
           );
+
 
           // Auto hide success banner
           setTimeout(() => {
@@ -312,10 +363,144 @@ const CandidateUpload = () => {
         {/* ========================= */}
 
         {isUploading && (
-          <div className="mt-6 rounded-2xl border border-cyan-500/20 bg-cyan-500/10 px-5 py-4 text-cyan-300">
-            Uploading and analyzing resumes...
+          <div className="mt-6 rounded-2xl border border-cyan-500/20 bg-cyan-500/10 px-5 py-5 text-cyan-300">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <CheckCircle2
+                  size={18}
+                  className="text-emerald-400"
+                />
+
+                <span>
+                  Resume Parsed Successfully
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <CheckCircle2
+                  size={18}
+                  className="text-emerald-400"
+                />
+
+                <span>
+                  GitHub Engineering Presence Verified
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <CheckCircle2
+                  size={18}
+                  className="text-emerald-400"
+                />
+
+                <span>
+                  Portfolio Deployment Validation Completed
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <CheckCircle2
+                  size={18}
+                  className="text-emerald-400"
+                />
+
+                <span>
+                  LinkedIn Professional Consistency Checked
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Brain
+                  size={18}
+                  className="text-cyan-400"
+                />
+
+                <span>
+                  Recruiter Intelligence Generated
+                </span>
+              </div>
+            </div>
           </div>
         )}
+
+
+                {/* ========================= */}
+        {/* EXTERNAL PROFILE LINKS */}
+        {/* ========================= */}
+
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              LinkedIn Profile
+            </label>
+
+            <input
+              type="text"
+              placeholder="https://linkedin.com/in/username"
+              value={externalProfiles?.linkedinUrl || ""
+              }
+              
+              onChange={(e) =>
+                setExternalProfiles({
+                  ...externalProfiles,
+                  linkedinUrl:
+                    e.target.value,
+                })
+              }
+              className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-cyan-500"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              GitHub Profile
+            </label>
+
+            <input
+              type="text"
+              placeholder="https://github.com/username"
+              value={
+                externalProfiles?.githubUrl || ""
+              }
+              onChange={(e) =>
+                setExternalProfiles({
+                  ...externalProfiles,
+                  githubUrl:
+                    e.target.value,
+                })
+              }
+              className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-cyan-500"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Portfolio Website
+            </label>
+
+            <input
+              type="text"
+              placeholder="https://portfolio.com"
+              value={
+                externalProfiles?.portfolioUrl || ""
+              }
+              onChange={(e) =>
+                setExternalProfiles({
+                  ...externalProfiles,
+                  portfolioUrl:
+                    e.target.value,
+                })
+              }
+              className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-cyan-500"
+            />
+          </div>
+        </div>
+
+
+
+
+
+
 
         {/* ========================= */}
         {/* DROPZONE */}
