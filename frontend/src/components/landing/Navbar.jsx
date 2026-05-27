@@ -1,6 +1,9 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+
   return (
     <motion.nav
       initial={{ y: -80, opacity: 0 }}
@@ -11,7 +14,15 @@ const Navbar = () => {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
         
         {/* Logo */}
-        <div className="flex items-center gap-2">
+        <div
+          onClick={() =>
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            })
+          }
+          className="flex cursor-pointer items-center gap-2"
+        >
           <div className="h-3 w-3 rounded-full bg-cyan-400 shadow-[0_0_20px_#22d3ee]" />
 
           <h1 className="text-2xl font-extrabold tracking-tight text-white">
@@ -52,8 +63,11 @@ const Navbar = () => {
         </div>
 
         {/* CTA */}
-        <button className="rounded-xl bg-cyan-400 px-4 py-2 text-xs font-semibold text-black transition hover:scale-105 hover:bg-cyan-300 sm:px-5 sm:py-2.5 sm:text-sm">
-         Get Started
+        <button
+          onClick={() => navigate("/register")}
+          className="rounded-xl bg-cyan-400 px-4 py-2 text-xs font-semibold text-black transition hover:scale-105 hover:bg-cyan-300 sm:px-5 sm:py-2.5 sm:text-sm"
+        >
+          Get Started
         </button>
       </div>
     </motion.nav>

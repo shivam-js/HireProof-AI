@@ -1,6 +1,9 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const CTASection = () => {
+
+  const navigate = useNavigate();
   return (
     <section
       id="pricing"
@@ -29,11 +32,24 @@ const CTASection = () => {
         </p>
 
         <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
-          <button className="rounded-2xl bg-cyan-400 px-8 py-4 font-semibold text-black shadow-lg shadow-cyan-500/25 transition hover:scale-105 hover:bg-cyan-300">
+          <button
+            onClick={() =>
+              navigate("/register")
+            }
+            className="rounded-2xl bg-cyan-400 px-8 py-4 font-semibold text-black shadow-lg shadow-cyan-500/25 transition hover:scale-105 hover:bg-cyan-300"
+          >
             Get Started Free
           </button>
 
-          <button className="rounded-2xl border border-white/15 bg-white/5 px-8 py-4 font-semibold text-white transition hover:bg-white/10">
+          <button
+            onClick={() =>
+              window.open(
+                "https://mail.google.com/mail/?view=cm&fs=1&to=prajapati2shivam@gmail.com&su=HireProof AI Demo Request",
+                "_blank"
+              )
+            }
+            className="rounded-2xl border border-white/15 bg-white/5 px-8 py-4 font-semibold text-white transition hover:bg-white/10"
+          >
             Request Demo
           </button>
         </div>

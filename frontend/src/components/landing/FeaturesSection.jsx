@@ -1,4 +1,6 @@
 import { motion } from "framer-motion";
+import { useRef } from "react";
+import gsap from "gsap";
 
 const features = [
   {
@@ -34,6 +36,26 @@ const features = [
 ];
 
 const FeaturesSection = () => {
+  const cardRefs = useRef([]);
+
+  const handleMouseEnter = (index) => {
+    gsap.to(cardRefs.current[index], {
+      y: -10,
+      scale: 1.03,
+      duration: 0.35,
+      ease: "power2.out",
+    });
+  };
+
+  const handleMouseLeave = (index) => {
+    gsap.to(cardRefs.current[index], {
+      y: 0,
+      scale: 1,
+      duration: 0.35,
+      ease: "power2.out",
+    });
+  };
+
   return (
     <section
       id="features"
@@ -68,6 +90,15 @@ const FeaturesSection = () => {
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
+              ref={(el) =>
+                (cardRefs.current[index] = el)
+              }
+              onMouseEnter={() =>
+                handleMouseEnter(index)
+              }
+              onMouseLeave={() =>
+                handleMouseLeave(index)
+              }
               initial={{ opacity: 0, y: 35 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{
@@ -75,7 +106,7 @@ const FeaturesSection = () => {
                 delay: index * 0.1,
               }}
               viewport={{ once: true }}
-              className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-8 backdrop-blur-xl transition hover:-translate-y-2 hover:border-cyan-400/30 hover:bg-cyan-400/[0.05]"
+              className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-8 backdrop-blur-xl transition hover:border-cyan-400/30 hover:bg-cyan-400/[0.05]"
             >
               <div className="absolute right-0 top-0 h-32 w-32 bg-cyan-400/5 blur-3xl transition group-hover:bg-cyan-400/10" />
 
@@ -83,7 +114,9 @@ const FeaturesSection = () => {
                 {index + 1}
               </div>
 
-              <h3 className="text-2xl font-bold">{feature.title}</h3>
+              <h3 className="text-2xl font-bold">
+                {feature.title}
+              </h3>
 
               <p className="mt-5 leading-8 text-slate-400">
                 {feature.description}
@@ -97,3 +130,4 @@ const FeaturesSection = () => {
 };
 
 export default FeaturesSection;
+
