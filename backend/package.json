@@ -26,8 +26,7 @@
     "mongoose": "^8.15.1",
     "multer": "^2.1.1",
     "nodemailer": "^8.0.9",
-    "openai": "^6.38.0",
-    "pdfjs-dist": "^5.7.284"
+    "openai": "^6.38.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
