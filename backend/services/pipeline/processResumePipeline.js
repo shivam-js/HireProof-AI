@@ -1,5 +1,4 @@
 import fs from "fs";
-import pdf from "pdf-parse/lib/pdf-parse.js";
 import generateInterviewQuestions from "../ai/interviewQuestionEngine.js";
 
 const COMMON_SKILLS = [
