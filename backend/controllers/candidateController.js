@@ -1,5 +1,7 @@
 import Candidate from "../models/Candidate.js";
 
+import sendEmail from "../utils/sendEmail.js";
+
 import { processResumePipeline } from "../services/pipeline/processResumePipeline.js";
 
 import { analyzeCandidate } from "../services/ai/candidateAnalyzer.js";
@@ -568,6 +570,159 @@ export const updateRecruiterNotes =
 
         message:
           "Failed to update recruiter notes.",
+      });
+    }
+  };
+
+
+/*
+  ==========================================
+  SHORTLIST CANDIDATE
+  ==========================================
+*/
+
+export const shortlistCandidate = async (
+  req,
+  res
+) => {
+  try {
+    const { candidateId } =
+      req.params;
+
+    const candidate =
+      await Candidate.findById(
+        candidateId
+      );
+
+    if (!candidate) {
+      return res.status(404).json({
+        success: false,
+        message:
+          "Candidate not found.",
+      });
+    }
+
+    candidate.recruitmentStatus =
+      "Shortlisted";
+
+    candidate.aiStatus =
+      "Shortlisted";
+
+    candidate.shortlistedAt =
+      new Date();
+
+    candidate.timeline.push({
+      label: "Shortlisted",
+      date: new Date(),
+    });
+
+    await candidate.save();
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Candidate shortlisted successfully.",
+      candidate,
+    });
+  } catch (error) {
+    console.error(
+      "Shortlist Candidate Error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        "Failed to shortlist candidate.",
+    });
+  }
+};
+
+
+
+/*
+  ==========================================
+  SEND SHORTLIST EMAIL
+  ==========================================
+*/
+
+export const sendShortlistEmail =
+  async (req, res) => {
+    try {
+      const { candidateId } =
+        req.params;
+
+      const candidate =
+        await Candidate.findById(
+          candidateId
+        );
+
+      if (!candidate) {
+        return res.status(404).json({
+          success: false,
+          message:
+            "Candidate not found.",
+        });
+      }
+
+      await sendEmail({
+        to: candidate.email,
+
+        subject:
+          "Congratulations — You’ve Been Shortlisted",
+
+        html: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h2>Congratulations ${candidate.candidateName} 🎉</h2>
+
+            <p>
+              We’re pleased to inform you that you’ve been shortlisted
+              for the next stage of our hiring process.
+            </p>
+
+            <p>
+              Our team was impressed by your profile,
+              technical experience, and application.
+            </p>
+
+            <p>
+              We’ll share interview scheduling details with you shortly.
+            </p>
+
+            <br/>
+
+            <p>
+              Best regards,<br/>
+              Hiring Team<br/>
+              HireProof AI
+            </p>
+          </div>
+        `,
+      });
+
+      candidate.timeline.push({
+        label:
+          "Congratulations Email Sent",
+        date: new Date(),
+      });
+
+      await candidate.save();
+
+      return res.status(200).json({
+        success: true,
+        message:
+          "Shortlist email sent successfully.",
+      });
+    } catch (error) {
+      console.error(
+        "Send Shortlist Email Error:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        message:
+          "Failed to send shortlist email.",
       });
     }
   };

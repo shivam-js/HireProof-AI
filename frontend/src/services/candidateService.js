@@ -53,3 +53,23 @@ export const updateRecruiterNotes =
 
     return response.data;
   };
+
+export const shortlistCandidate =
+  async (candidateId) => {
+    const response =
+      await api.patch(
+        `/candidates/${candidateId}/shortlist`
+      );
+
+    return response.data;
+  };
+
+export const sendShortlistEmail =
+  async (candidateId) => {
+    const response =
+      await api.post(
+        `/candidates/${candidateId}/send-email`
+      );
+
+    return response.data;
+  };

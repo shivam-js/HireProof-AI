@@ -4,6 +4,7 @@ import {
   Users,
   FileText,
   LogOut,
+  UserCheck,
 } from "lucide-react";
 
 import { NavLink, useNavigate } from "react-router-dom";
@@ -99,6 +100,18 @@ const DashboardSidebar = ({
             <Users size={20} />
 
             Candidates
+          </NavLink>
+
+          <NavLink
+            to="/dashboard/shortlisted"
+            className={navItemClass}
+            onClick={() =>
+              setIsSidebarOpen(false)
+            }
+          >
+            <UserCheck size={20} />
+
+            Shortlisted
           </NavLink>
 
           <NavLink

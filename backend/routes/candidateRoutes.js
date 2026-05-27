@@ -5,6 +5,8 @@ import {
   getAllCandidates,
   updateRecruitmentStatus,
   updateRecruiterNotes,
+  shortlistCandidate,
+  sendShortlistEmail,
 } from "../controllers/candidateController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -34,6 +36,16 @@ router.post(
   protect,
   upload.single("resume"),
   uploadCandidateResume
+);
+
+router.patch(
+  "/:candidateId/shortlist",
+  shortlistCandidate
+);
+
+router.post(
+  "/:candidateId/send-email",
+  sendShortlistEmail
 );
 
 export default router;

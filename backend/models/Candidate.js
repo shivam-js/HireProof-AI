@@ -297,6 +297,25 @@ const candidateSchema = new mongoose.Schema(
     },
 
     skills: [String],
+
+    shortlistedAt: {
+      type: Date,
+      default: null,
+    },
+
+    timeline: [
+      {
+        label: {
+          type: String,
+          required: true,
+        },
+
+        date: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

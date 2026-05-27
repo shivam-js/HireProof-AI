@@ -9,6 +9,7 @@ import Home from "./pages/Home/Home";
 import AuthLayout from "./layouts/AuthLayout";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import CandidatesPage from "./pages/Dashboard/CandidatesPage";
+import ShortlistedPage from "./pages/Dashboard/ShortlistedPage";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 import Login from "./pages/auth/pages/Login";
@@ -44,6 +45,15 @@ function App() {
           element={
             <ProtectedRoute>
               <CandidatesPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/dashboard/shortlisted"
+          element={
+            <ProtectedRoute>
+              <ShortlistedPage />
             </ProtectedRoute>
           }
         />

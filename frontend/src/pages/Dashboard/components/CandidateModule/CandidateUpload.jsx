@@ -18,6 +18,7 @@ import {
   getAllCandidates,
   updateCandidateStatus,
   updateRecruiterNotes,
+  shortlistCandidate,
 } from "../../../../services/candidateService";
 
 const CandidateUpload = () => {
@@ -266,10 +267,19 @@ const CandidateUpload = () => {
       recruitmentStatus
     ) => {
       try {
-        await updateCandidateStatus(
-          candidateId,
-          recruitmentStatus
-        );
+        if (
+          recruitmentStatus ===
+          "Shortlisted"
+        ) {
+          await shortlistCandidate(
+            candidateId
+          );
+        } else {
+          await updateCandidateStatus(
+            candidateId,
+            recruitmentStatus
+          );
+        }
 
         await fetchCandidates();
       } catch (error) {
