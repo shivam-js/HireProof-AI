@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import AuthCard from "../components/AuthCard";
 import AuthInput from "../components/AuthInput";
 import AuthButton from "../components/AuthButton";
-import { registerUser } from "../services/authServices";
+import { registerUser } from "../../../services/authServices";
 import {
   validateEmail,
   validatePassword,
