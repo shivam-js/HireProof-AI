@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthCard from "../components/AuthCard";
 import AuthInput from "../components/AuthInput";
 import AuthButton from "../components/AuthButton";
+import { registerUser } from "../services/authServices";
 import {
   validateEmail,
   validatePassword,
@@ -10,6 +11,8 @@ import {
 } from "../utils/authValidation";
 
 const Register = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -17,22 +20,23 @@ const Register = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
 
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
 
-    setErrors({
-      ...errors,
+    setErrors((prev) => ({
+      ...prev,
       [name]: "",
-    });
+    }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const newErrors = {
@@ -43,13 +47,30 @@ const Register = () => {
 
     setErrors(newErrors);
 
-    const hasErrors = Object.values(newErrors).some(
-      (error) => error
-    );
+    const hasErrors = Object.values(newErrors).some(Boolean);
 
     if (hasErrors) return;
 
-    console.log("Register form valid:", formData);
+    try {
+      setLoading(true);
+
+      const response = await registerUser(formData);
+
+      if (response?.success) {
+        alert("Account created successfully. Please login.");
+
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("Registration failed:", error);
+
+      alert(
+        error?.response?.data?.message ||
+          "Registration failed. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -88,7 +109,9 @@ const Register = () => {
           error={errors.password}
         />
 
-        <AuthButton text="Create Account" />
+        <AuthButton
+          text={loading ? "Creating Account..." : "Create Account"}
+        />
 
         <p className="text-center text-sm text-slate-400">
           Already have an account?{" "}
