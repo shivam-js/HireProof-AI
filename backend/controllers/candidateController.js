@@ -268,6 +268,9 @@ export const uploadCandidateResume =
 
       const candidate =
         await Candidate.create({
+
+          user: req.user._id,
+
           candidateName:
             parsedResumeData.extractedName,
 
@@ -438,7 +441,9 @@ export const getAllCandidates =
   async (req, res) => {
     try {
       const candidates =
-        await Candidate.find().sort({
+        await Candidate.find({
+          user: req.user._id,
+        }).sort({
           createdAt: -1,
         });
 
