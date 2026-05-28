@@ -1,5 +1,8 @@
 import Candidate from "../models/Candidate.js";
 
+import fs from "fs";
+import path from "path";
+
 import sendEmail from "../utils/sendEmail.js";
 
 import { processResumePipeline } from "../services/pipeline/processResumePipeline.js";
@@ -30,6 +33,18 @@ import {
 
 export const uploadCandidateResume =
   async (req, res) => {
+    
+    const uploadDir = path.join(
+      process.cwd(),
+      "backend",
+      "uploads",
+      "resumes"
+    );
+
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
     try {
       /*
         ==========================================
