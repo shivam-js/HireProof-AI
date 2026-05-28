@@ -47,29 +47,29 @@ const Register = () => {
 
     setErrors(newErrors);
 
-    const hasErrors = Object.values(newErrors).some(
-      (error) => error
-    );
+    const hasErrors = Object.values(newErrors).some((error) => error);
 
     if (hasErrors) return;
 
     try {
+      setErrors({});
+
       const response = await registerUser(formData);
 
-      alert("Registration successful! Please login.");
+      if (response?.success) {
+        alert("Registration successful! Please login.");
 
-      setFormData({
-        fullName: "",
-        email: "",
-        password: "",
-      });
-
-      console.log(response);
+        setFormData({
+          fullName: "",
+          email: "",
+          password: "",
+        });
+      }
     } catch (error) {
       setErrors({
         api:
           error?.response?.data?.message ||
-          "Registration failed. Try again.",
+          "Registration failed",
       });
     }
   };
