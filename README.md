@@ -1,183 +1,221 @@
-# 🚀 HireProof-AI
+# HireProof AI
 
-> AI-Powered ATS Resume Analysis & Recruiter Intelligence Platform
+### AI-Powered Technical Hiring & Candidate Verification Platform
 
-HireProof-AI is a full-stack AI recruitment platform that analyzes resumes using ATS-inspired evaluation, semantic resume intelligence, recruiter scoring systems, and AI-driven hiring insights.
-
-Built with MERN architecture and modern recruiter workflows in mind, HireProof-AI simulates how real hiring platforms evaluate candidates beyond simple keyword matching.
-
----
-
-# ✨ Features
-
-## 🧠 AI ATS Resume Analysis
-- ATS-style scoring engine
-- Semantic resume evaluation
-- Resume section parsing
-- Recruiter confidence scoring
-- AI hiring recommendations
-- Candidate ranking system
+<p align="center">
+  Full-stack recruiter intelligence platform for resume screening, candidate management, and AI-driven hiring workflows.
+</p>
 
 ---
 
-## 📄 Resume Parsing System
-Automatically extracts:
-- Skills
-- Projects
-- Experience
-- Education
-- Certifications
-- Contact Information
+## Live Demo
 
-Supports:
-- PDF resumes
-- DOC/DOCX resumes
+### Frontend
+
+https://hireproof-ai.netlify.app
+
+### Backend API
+
+https://hireproof-ai.onrender.com
 
 ---
 
-## 📊 Intelligent Scoring Engine
+# Overview
 
-The ATS engine evaluates resumes using:
+HireProof AI is a modern full-stack recruiter platform designed to simplify hiring workflows through AI-powered candidate management.
 
-- Technical skill quality
-- Project complexity
-- Resume structure
-- Recruiter readability
-- Semantic engineering relevance
-- Resume completeness
-- AI confidence metrics
+Recruiters can:
 
-Unlike traditional ATS systems, HireProof-AI analyzes the **overall quality and intelligence of the resume**, not just keyword presence.
+* register and securely log in
+* upload candidate resumes
+* manage hiring workflows
+* track candidate progress
+* review recruiter-specific dashboards
+* work inside a scalable AI hiring workspace
 
----
-
-## 👨‍💼 Recruiter Dashboard
-
-Professional recruiter interface featuring:
-- Candidate pipeline
-- Match score filtering
-- Resume viewing/downloading
-- Recruitment status tracking
-- AI recruiter insights
-- Candidate evaluation workflows
+Built with production-ready MERN architecture and deployed on Netlify + Render.
 
 ---
 
-## ⚡ AI Recruiter Intelligence
-
-The platform generates:
-- Technical strengths
-- Resume weaknesses
-- Interview focus areas
-- Hiring recommendations
-- Semantic analysis
-- ATS compatibility analysis
-
----
-
-# 🛠 Tech Stack
+# Tech Stack
 
 ## Frontend
-- React.js
-- Vite
-- Tailwind CSS
-- Lucide React
 
-## Backend
-- Node.js
-- Express.js
-- MongoDB Atlas
-- JWT Authentication
-- Multer File Uploads
-
-## AI & Parsing
-- PDF Parsing
-- Semantic Resume Evaluation
-- Custom ATS Engine
-- Resume Section Extraction
-- Recruiter Confidence Engine
+* React.js
+* Vite
+* Tailwind CSS
+* React Router DOM
+* Axios
+* Context API
+* Lucide React
 
 ---
 
-# 🏗 Project Architecture
+## Backend
+
+* Node.js
+* Express.js
+* MongoDB Atlas
+* Mongoose
+* JWT Authentication
+* Multer File Upload
+
+---
+
+## Deployment
+
+* Netlify — Frontend Hosting
+* Render — Backend Hosting
+* MongoDB Atlas — Cloud Database
+
+---
+
+# Features
+
+## Authentication
+
+* Recruiter Registration
+* Secure Login
+* JWT Authentication
+* Protected Dashboard Routes
+* Persistent Login Sessions
+* Logout Flow
+
+---
+
+## Candidate Resume Upload
+
+* PDF Resume Upload
+* Resume Storage
+* Candidate Record Creation
+* Production Upload Support on Render
+
+---
+
+## Recruiter Dashboard
+
+* Candidates Screened Counter
+* Pending Reviews Counter
+* Verified Profiles Counter
+* Reports Generated Counter
+
+---
+
+## Candidate Workspace
+
+* Candidate Resume Management
+* Hiring Workflow Interface
+* Recruiter Workspace Panel
+* Candidate Tracking Foundation
+
+---
+
+## User-Specific Data Security
+
+Each recruiter sees only:
+
+* their own uploaded candidates
+* their own dashboard statistics
+* their own recruiter workspace data
+
+User data remains fully isolated across accounts.
+
+---
+
+# Project Structure
 
 ```bash
 HireProof-AI/
 │
 ├── backend/
 │   ├── config/
+│   │   ├── aiConfig.js
+│   │   └── db.js
+│   │
 │   ├── controllers/
+│   │   ├── authController.js
+│   │   └── candidateController.js
+│   │
 │   ├── middleware/
+│   │   └── uploadMiddleware.js
+│   │
 │   ├── models/
 │   ├── routes/
 │   ├── services/
-│   │   └── ai/
 │   ├── uploads/
-│   └── server.js
+│   ├── utils/
+│   │
+│   ├── .env
+│   ├── package.json
+│   ├── server.js
+│   ├── testPdfParser.js
+│   └── vercel.json
 │
 ├── frontend/
+│   ├── public/
+│   │   ├── _redirects
+│   │   ├── favicon.svg
+│   │   └── icons.svg
+│   │
 │   ├── src/
-│   │   ├── pages/
+│   │   ├── assets/
 │   │   ├── components/
-│   │   ├── services/
+│   │   ├── constants/
+│   │   ├── context/
+│   │   ├── hooks/
 │   │   ├── layouts/
-│   │   └── routes/
+│   │   ├── pages/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── styles/
+│   │   ├── utils/
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── index.css
+│   │
+│   ├── .env
+│   ├── package.json
+│   ├── vite.config.js
+│   └── index.html
 │
+├── DEBUG_LOG.md
+├── PROJECT_PROGRESS.md
+├── PROJECT_RULES.md
 └── README.md
 ```
 
 ---
 
-# 📷 Platform Preview
+# Local Setup
 
-## Recruiter Dashboard
-- Candidate pipeline
-- ATS scores
-- Resume management
-- AI recruiter insights
-
-## ATS Resume Evaluation
-- Intelligent scoring
-- Semantic analysis
-- Resume parsing
-- Recruiter confidence
-
----
-
-# ⚙️ Installation
-
-## 1️⃣ Clone Repository
+## Clone Repository
 
 ```bash
-git clone https://Code2.com/shivam-js/HireProof-AI.git
+git clone https://github.com/shivam-js/HireProof-AI.git
+cd HireProof-AI
 ```
 
 ---
 
-## 2️⃣ Backend Setup
+## Backend Setup
 
 ```bash
 cd backend
 npm install
+npm run dev
 ```
 
-Create `.env`
-
-```env
-PORT=5000
-MONGO_URI=YOUR_MONGODB_URI
-JWT_SECRET=YOUR_SECRET
-```
-
-Run backend:
+Runs backend server on:
 
 ```bash
-npm run dev
+http://localhost:5000
 ```
 
 ---
 
-## 3️⃣ Frontend Setup
+## Frontend Setup
+
+Open a second terminal:
 
 ```bash
 cd frontend
@@ -185,81 +223,108 @@ npm install
 npm run dev
 ```
 
----
+Runs frontend on:
 
-# 🔐 Environment Variables
-
-Backend `.env`
-
-```env
-PORT=
-MONGO_URI=
-JWT_SECRET=
+```bash
+http://localhost:5173
 ```
 
 ---
 
-# 📈 Current Capabilities
+# Environment Variables
 
-✅ Resume Upload System  
-✅ ATS Resume Evaluation  
-✅ Semantic Resume Analysis  
-✅ Recruiter Dashboard  
-✅ Candidate Pipeline  
-✅ Resume Parsing  
-✅ AI Candidate Insights  
-✅ Match Score Evaluation  
-✅ Professional UI/UX  
+## Backend `.env`
+
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_secret_key
+```
 
 ---
 
-# 🚀 Future Improvements
+## Frontend `.env`
 
-- OpenAI / LLM Integration
-- Vector Database Search
-- Job Description Matching
-- AI Interview Question Generation
-- Recruiter Analytics Dashboard
-- Team Collaboration System
-- Email Notifications
-- Resume Embeddings
-- AI Hiring Assistant
-- Candidate Comparison Engine
+```env
+VITE_API_URL=https://hireproof-ai.onrender.com
+```
 
 ---
 
-# 🎯 Purpose of the Project
+# Major Production Fixes Completed
 
-HireProof-AI was built to simulate how modern AI-powered recruitment systems evaluate candidates using:
-- semantic reasoning
-- recruiter intelligence
-- ATS optimization
-- technical profile evaluation
+## Authentication Fixes
 
-The goal is to bridge the gap between traditional keyword-based ATS systems and modern AI-driven hiring workflows.
-
----
-
-# 👨‍💻 Author
-
-### Shivam Prasad
-
-AI & Full Stack Developer
-
-Code2:
-https://Code2.com/shivam-js
+* Register flow fixed
+* Login flow fixed
+* Registration success feedback added
+* Improved error handling
 
 ---
 
-# ⭐ Support
+## Deployment Fixes
 
-If you found this project useful:
-- Star the repository
-- Share feedback
-- Contribute improvements
+* Netlify deployment configured
+* Render backend deployment stabilized
+* React Router route refresh fixed using `_redirects`
 
 ---
 
-# 📄 License
+## Resume Upload Fixes
 
-This project is licensed under the MIT License.
+* Render upload directory auto-created dynamically
+* PDF upload working in production
+* Upload middleware fixed
+
+---
+
+## Security & Data Fixes
+
+* User-specific candidate filtering implemented
+* Dashboard data isolation fixed
+* Recruiter account separation working correctly
+
+---
+
+# Roadmap
+
+Upcoming planned features:
+
+* AI Resume Analysis Engine
+* ATS Match Percentage
+* Candidate Ranking System
+* Shortlisted Candidates Module
+* Recruiter Report Generation
+* Interview Tracking Workflow
+* AI Candidate Insights Dashboard
+* Hiring Analytics & Reporting
+
+---
+
+# Author
+
+## Shivam Prasad
+
+Full Stack Developer • MERN Stack Developer • AI Product Builder
+
+GitHub:
+https://github.com/shivam-js
+
+---
+
+# Project Status
+
+## Currently in Active Development
+
+HireProof AI is actively being developed with ongoing improvements focused on:
+
+* AI candidate intelligence
+* recruiter workflow automation
+* technical hiring optimization
+* scalable recruiter SaaS architecture
+
+---
+
+# License
+
+MIT License
