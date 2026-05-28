@@ -119,7 +119,7 @@ const CandidateTable = ({
 
                 const resumeLink =
                   candidate.resumeUrl
-                    ? `http://localhost:5000${candidate.resumeUrl}`
+                    ? `${import.meta.env.VITE_API_URL}${candidate.resumeUrl}`
                     : "#";
 
                 return (
