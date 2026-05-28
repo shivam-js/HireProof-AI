@@ -261,34 +261,51 @@ const CandidateUpload = () => {
   // STATUS UPDATE
   // =========================
 
-  const handleStatusUpdate =
-    async (
-      candidateId,
-      recruitmentStatus
-    ) => {
-      try {
-        if (
-          recruitmentStatus ===
-          "Shortlisted"
-        ) {
-          await shortlistCandidate(
-            candidateId
-          );
-        } else {
-          await updateCandidateStatus(
-            candidateId,
-            recruitmentStatus
-          );
-        }
-
-        await fetchCandidates();
-      } catch (error) {
-        console.error(
-          "Status Update Error:",
-          error
+  const handleStatusUpdate = async (
+    candidateId,
+    recruitmentStatus
+  ) => {
+    try {
+      if (
+        recruitmentStatus === "Shortlisted"
+      ) {
+        await shortlistCandidate(
+          candidateId
+        );
+      } else {
+        await updateCandidateStatus(
+          candidateId,
+          recruitmentStatus
         );
       }
-    };
+
+      const response =
+        await getAllCandidates();
+
+      const updatedCandidates =
+        response?.candidates || [];
+
+      setCandidates(updatedCandidates);
+
+      if (selectedCandidate) {
+        const refreshedCandidate =
+          updatedCandidates.find(
+            (candidate) =>
+              candidate._id ===
+              selectedCandidate._id
+          );
+
+        setSelectedCandidate(
+          refreshedCandidate || null
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Status Update Error:",
+        error
+      );
+    }
+  };
 
   // =========================
   // NOTES UPDATE
