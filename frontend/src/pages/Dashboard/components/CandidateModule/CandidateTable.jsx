@@ -118,8 +118,10 @@ const CandidateTable = ({
                   getScoreColor(aiScore);
 
                 const API_BASE_URL =
-                  import.meta.env.VITE_API_URL ||
-                  "https://hireproof-ai.onrender.com";
+                  import.meta.env.VITE_API_BASE_URL?.replace(
+                    "/api",
+                    ""
+                  ) || "https://hireproof-ai.onrender.com";
 
                 const resumeLink =
                   candidate.resumeUrl
