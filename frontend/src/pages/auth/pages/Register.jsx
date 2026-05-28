@@ -47,29 +47,30 @@ const Register = () => {
 
     setErrors(newErrors);
 
-    const hasErrors = Object.values(newErrors).some(Boolean);
+    const hasErrors = Object.values(newErrors).some(
+      (error) => error
+    );
 
     if (hasErrors) return;
 
     try {
-      setLoading(true);
-
       const response = await registerUser(formData);
 
-      if (response?.success) {
-        alert("Account created successfully. Please login.");
+      alert("Registration successful! Please login.");
 
-        navigate("/login");
-      }
+      setFormData({
+        fullName: "",
+        email: "",
+        password: "",
+      });
+
+      console.log(response);
     } catch (error) {
-      console.error("Registration failed:", error);
-
-      alert(
-        error?.response?.data?.message ||
-          "Registration failed. Please try again."
-      );
-    } finally {
-      setLoading(false);
+      setErrors({
+        api:
+          error?.response?.data?.message ||
+          "Registration failed. Try again.",
+      });
     }
   };
 
@@ -108,6 +109,12 @@ const Register = () => {
           onChange={handleChange}
           error={errors.password}
         />
+
+        {errors.api && (
+          <p className="text-sm text-red-400 text-center">
+            {errors.api}
+          </p>
+        )}
 
         <AuthButton
           text={loading ? "Creating Account..." : "Create Account"}
