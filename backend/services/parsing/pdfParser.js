@@ -1,4 +1,5 @@
 import fs from "fs";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);
@@ -55,12 +56,91 @@ export const extractProfileLinksFromText = (text = "") => {
 };
 
 export const extractProfileLinksFromPdf = async (filePath) => {
-  try {
-    const text = await parsePdfResume(filePath);
+  const links = {
+    linkedinUrl: "",
+    githubUrl: "",
+    portfolioUrl: "",
+  };
 
-    return extractProfileLinksFromText(text);
+  try {
+    const data = new Uint8Array(
+      fs.readFileSync(filePath)
+    );
+
+    const pdf =
+      await pdfjsLib.getDocument({
+        data,
+      }).promise;
+
+    for (
+      let pageNum = 1;
+      pageNum <= pdf.numPages;
+      pageNum++
+    ) {
+      const page =
+        await pdf.getPage(pageNum);
+
+      const annotations =
+        await page.getAnnotations();
+
+      for (const annotation of annotations) {
+        const url =
+          annotation?.url || "";
+
+        if (
+          !url ||
+          url.startsWith("mailto:") ||
+          url.startsWith("tel:")
+        ) {
+          continue;
+        }
+
+        if (
+          url.includes("linkedin.com") &&
+          !links.linkedinUrl
+        ) {
+          links.linkedinUrl = url;
+        }
+
+        else if (
+          url.includes("github.com") &&
+          !links.githubUrl
+        ) {
+          links.githubUrl = url;
+        }
+
+        else if (
+          !links.portfolioUrl
+        ) {
+          links.portfolioUrl = url;
+        }
+      }
+    }
+
+    const text =
+      await parsePdfResume(filePath);
+
+    const textLinks =
+      extractProfileLinksFromText(text);
+
+    return {
+      linkedinUrl:
+        links.linkedinUrl ||
+        textLinks.linkedinUrl,
+
+      githubUrl:
+        links.githubUrl ||
+        textLinks.githubUrl,
+
+      portfolioUrl:
+        links.portfolioUrl ||
+        textLinks.portfolioUrl,
+    };
   } catch (error) {
-    console.error("PDF Link Extraction Error:", error);
+    console.error(
+      "PDF Link Extraction Error:",
+      error
+    );
 
     return {
       linkedinUrl: "",
