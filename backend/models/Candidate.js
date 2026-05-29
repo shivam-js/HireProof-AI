@@ -291,9 +291,10 @@ const candidateSchema = new mongoose.Schema(
       default: "",
     },
 
-    uploadedBy: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
     },
 
     skills: [String],
