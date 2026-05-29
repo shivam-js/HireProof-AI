@@ -1,4 +1,8 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
+
+const resend = new Resend(
+  process.env.RESEND_API_KEY
+);
 
 const sendEmail = async ({
   to,
@@ -6,30 +10,16 @@ const sendEmail = async ({
   html,
 }) => {
   try {
-    const transporter =
-      nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 587,
-        secure: false,
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
+    const response =
+      await resend.emails.send({
+        from:
+          "HireProof AI <onboarding@resend.dev>",
+        to,
+        subject,
+        html,
       });
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to,
-      subject,
-      html,
-    };
-
-    const info =
-      await transporter.sendMail(
-        mailOptions
-      );
-
-    return info;
+    return response;
   } catch (error) {
     console.error(
       "Send Email Error:",

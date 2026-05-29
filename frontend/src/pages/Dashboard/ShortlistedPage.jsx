@@ -147,18 +147,27 @@ const ShortlistedPage = () => {
                         </p>
 
                         <button
-                            onClick={async () => {
-                                setSelectedEmailCandidate(
+                          onClick={async () => {
+                            if (
+                              selectedEmailCandidate?._id !==
+                              candidate._id
+                            ) {
+                              setSelectedEmailCandidate(
                                 candidate
-                                );
+                              );
+                              return;
+                            }
 
-                                await handleSendEmail(
-                                candidate._id
-                                );
-                            }}
-                            className="rounded-xl bg-cyan-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
-                            >
-                            Send Email
+                            await handleSendEmail(
+                              candidate._id
+                            );
+                          }}
+                          className="rounded-xl bg-cyan-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-cyan-400"
+                        >
+                          {selectedEmailCandidate?._id ===
+                          candidate._id
+                            ? "Send Email"
+                            : "Generate Email"}
                         </button>
                     </div>
 
