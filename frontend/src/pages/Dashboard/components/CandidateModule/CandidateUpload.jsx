@@ -59,7 +59,11 @@ const CandidateUpload = () => {
   // =========================
 
   const activeCandidate =
-    selectedCandidate ||
+    candidates.find(
+      (candidate) =>
+        candidate._id ===
+        selectedCandidate?._id
+    ) ||
     candidates[0] ||
     null;
 
