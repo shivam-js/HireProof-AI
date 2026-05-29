@@ -27,8 +27,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://hire-proof-ai-kohl.vercel.app",
-      "https://hire-proof-dxl5745yw-shivam-js-projects.vercel.app",
+      "https://hireproof-ai.vercel.app",
     ],
     credentials: true,
   })
