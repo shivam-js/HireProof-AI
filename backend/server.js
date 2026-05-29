@@ -27,7 +27,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://hireproof-ai.netlify.app",
+      "https://hire-proof-ai-kohl.vercel.app",
     ],
     credentials: true,
   })
