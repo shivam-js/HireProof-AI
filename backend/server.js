@@ -28,6 +28,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://hire-proof-ai-kohl.vercel.app",
+      "https://hire-proof-dxl5745yw-shivam-js-projects.vercel.app",
     ],
     credentials: true,
   })
