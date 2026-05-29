@@ -142,7 +142,7 @@ const HeroSection = () => {
   return (
     <section
       ref={heroSectionRef}
-      className="relative flex min-h-screen items-center overflow-hidden bg-[#020617] px-6 pt-28 text-white lg:px-10"
+      className="relative flex min-h-screen items-start overflow-hidden bg-[#020617] px-6 pt-28 pb-20 text-white sm:pb-24 lg:items-center lg:px-10 lg:pb-0"
     >
       <motion.div
         animate={{
