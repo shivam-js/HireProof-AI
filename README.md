@@ -12,7 +12,7 @@
 
 ### Frontend
 
-https://hireproof-ai.netlify.app
+https://hireproof-ai.vercel.app/
 
 ### Backend API
 
